@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple
+    android:color="#444444"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:height="70dp" android:width="70dp">
+        <shape android:shape="oval">
+            <solid android:color="#222222" />
+            <corners android:radius="100dp" />
+        </shape>
+    </item>
+
+    <item
+        android:drawable="@drawable/baseline_note_add_24"
+        android:top="10dp"
+        android:right="10dp"
+        android:left="10dp"
+        android:bottom="10dp"
+        android:width="50dp"
+        android:height="50dp"
+        android:fillColor="#FFFFFF"
+        />
+
+</ripple>
