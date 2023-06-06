@@ -2,6 +2,7 @@ package com.example.notesmobile;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -17,7 +18,7 @@ public class DB extends SQLiteOpenHelper {
     private static DB instance;
 
     public DB(Context context) {
-        super(context,BankName,null,Version);
+        super(context,Notes.tableName,null,Version);
         dataBase = getWritableDatabase();
     }
 
@@ -41,16 +42,24 @@ public class DB extends SQLiteOpenHelper {
 
     }
 
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
+    }
+
     public void createNewTask(Notes notes) {
         ContentValues values = this.contentValuesTask(notes);
         notes.id = (int) getWritableDatabase().insert(Notes.tableName, null, values);
-
 
     }
 
     private ContentValues contentValuesTask(Notes notes) {
         ContentValues values = new ContentValues();
-        values.put(notes.fatherColumn, notes.getFather());
+        int father = notes.getFather();
+        if(father > 0) {
+            values.put(notes.fatherColumn, father);
+        }
         values.put(notes.titleColumn, notes.getTitle());
         values.put(notes.descriptionColumn, notes.getDescription());
         return values;
@@ -66,7 +75,18 @@ public class DB extends SQLiteOpenHelper {
 
     public long deleteNotes(int id)
     {
-        return getWritableDatabase().delete(Notes.tableName, "idNote="+id, null);
+        SQLiteDatabase db = getWritableDatabase();
+        long result;
+        db.beginTransaction();
+        try{
+            result = db.delete(Notes.tableName, "idNote=?",
+                    new String[] {Integer.toString(id)});
+            db.setTransactionSuccessful();
+        }finally {
+            db.endTransaction();
+        }
+        db.close();
+        return result;
     }
 
     public ArrayList<Notes> listNotes(int father)
@@ -80,7 +100,7 @@ public class DB extends SQLiteOpenHelper {
 
                 },
                 null, null,null,null,null);*/
-        Cursor cursor = dataBase.rawQuery("SELECT * FROM "+Notes.tableName+" WHERE father="+father, null);
+        Cursor cursor = dataBase.rawQuery("SELECT * FROM "+Notes.tableName+" WHERE father "+(father > 0? ("="+father) : ("is NULL")), null);
 
         while (cursor.moveToNext()){
 
