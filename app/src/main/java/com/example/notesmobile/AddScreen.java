@@ -25,7 +25,7 @@ public class AddScreen extends Activity {
         EditText title = findViewById(R.id.title);
         EditText description = findViewById(R.id.description);
         try{
-            Notes note = new Notes(0,title.getText().toString(), description.getText().toString());
+            Notes note = new Notes(0,0, title.getText().toString(), description.getText().toString());
             db.createNewTask(note);
             Toast.makeText(getApplicationContext(), "Note created", Toast.LENGTH_LONG).show();
             back(v);

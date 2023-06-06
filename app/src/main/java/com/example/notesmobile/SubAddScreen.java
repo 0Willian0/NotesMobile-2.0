@@ -7,11 +7,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class EditScreen extends Activity {
-
+public class SubAddScreen extends Activity {
     DB db;
     EditText title, description;
-    int idIntent, fatherIntent;
+    int idIntent;
     String titleIntent, descriptionIntent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,22 +19,16 @@ public class EditScreen extends Activity {
         title = findViewById(R.id.title);
         description = findViewById(R.id.description);
         idIntent = getIntent().getIntExtra("Id", 0);
-        fatherIntent = getIntent().getIntExtra("Father",0);
-        titleIntent = getIntent().getStringExtra("Title");
-        descriptionIntent = getIntent().getStringExtra("Description");
-        title.setText(titleIntent);
-        description.setText(descriptionIntent);
         db = new DB(this);
     }
 
     public void save(View v)
     {
         try{
-            long edit = db.editNotes(idIntent, fatherIntent, title.getText().toString(), description.getText().toString());
-            if (edit != -1) {
-                Toast.makeText(getApplicationContext(), "Note Updated", Toast.LENGTH_LONG).show();
-                back(v);
-            }
+            Notes note = new Notes(0,idIntent, title.getText().toString(), description.getText().toString());
+            db.createNewTask(note);
+            Toast.makeText(getApplicationContext(), "Sub Note created", Toast.LENGTH_LONG).show();
+            back(v);
         }
         catch (Exception e)
         {
@@ -48,5 +41,4 @@ public class EditScreen extends Activity {
         Intent back = new Intent(this, MainActivity.class);
         startActivity(back);
     }
-
 }

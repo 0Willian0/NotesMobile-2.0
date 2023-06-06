@@ -50,17 +50,18 @@ public class DB extends SQLiteOpenHelper {
 
     private ContentValues contentValuesTask(Notes notes) {
         ContentValues values = new ContentValues();
+        values.put(notes.fatherColumn, notes.getFather());
         values.put(notes.titleColumn, notes.getTitle());
         values.put(notes.descriptionColumn, notes.getDescription());
         return values;
     }
 
-    public long editNotes(int id, String title, String description)
+    public long editNotes(int id, int father, String title, String description)
     {
         ContentValues contentValues = new ContentValues();
         contentValues.put(Notes.titleColumn, title);
         contentValues.put(Notes.descriptionColumn, description);
-        return getWritableDatabase().update(Notes.tableName, contentValues,"idNote="+id,null);
+        return getWritableDatabase().update(Notes.tableName, contentValues,"idNote="+id+" AND "+"father="+father,null);
     }
 
     public long deleteNotes(int id)
@@ -68,16 +69,18 @@ public class DB extends SQLiteOpenHelper {
         return getWritableDatabase().delete(Notes.tableName, "idNote="+id, null);
     }
 
-    public ArrayList<Notes> listNotes()
+    public ArrayList<Notes> listNotes(int father)
     {
         ArrayList<Notes> noteList = new ArrayList<>();
 
-        Cursor cursor = dataBase.query(Notes.tableName, new String[]{
+       /* Cursor cursor = dataBase.query(Notes.tableName, new String[]{
                         Notes.idColumn,
+                        Notes.fatherColumn,
                         Notes.titleColumn,Notes.descriptionColumn
 
                 },
-                null, null,null,null,null);
+                null, null,null,null,null);*/
+        Cursor cursor = dataBase.rawQuery("SELECT * FROM "+Notes.tableName+" WHERE father="+father, null);
 
         while (cursor.moveToNext()){
 
@@ -87,6 +90,7 @@ public class DB extends SQLiteOpenHelper {
 
                 notes = new Notes(
                         cursor.getInt(cursor.getColumnIndexOrThrow(Notes.idColumn)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(Notes.fatherColumn)),
                         cursor.getString(cursor.getColumnIndexOrThrow(Notes.titleColumn)),
                         cursor.getString(cursor.getColumnIndexOrThrow(Notes.descriptionColumn))
                 );
@@ -97,6 +101,7 @@ public class DB extends SQLiteOpenHelper {
 
                 Notes notes = new Notes(
                         cursor.getInt(cursor.getColumnIndexOrThrow(Notes.idColumn)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(Notes.fatherColumn)),
                         cursor.getString(cursor.getColumnIndexOrThrow(Notes.titleColumn)),
                         cursor.getString(cursor.getColumnIndexOrThrow(Notes.descriptionColumn))
                 );
